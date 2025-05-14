@@ -1,38 +1,27 @@
-const express = require(\'express\');
-const cors = require(\'cors\');
-const bodyParser = require(\'body-parser\');
-const os = require(\'os\');
+// Configurări server - backend SkinEvo pentru Render.com
+// Ultima actualizare: deployment pe Render
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const os = require("os");
+
+// Configurări server - backend SkinEvo
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Enable CORS for all origins during development
 app.use(cors());
 
-app.use(bodyParser.json({ limit: \'50mb\' }));
+// Simple ping endpoint for connection testing
+app.get("/ping", (req, res) => {
+  console.log("Received ping request");
+  res.status(200).send("pong");
+});
 
-app.get(\'/ping\', (req, res) => {console.log(\'Received ping request from:\', req.ip);res.status(200).send(\'pong\');});
-
-
-
-app.post(\'/analyze-skin\', (req, res) => {console.log(\'Received request to /analyze-skin from:\', req.ip);try {const { photos } = req.body;if (!photos) {console.log(\'Error: No photos in request\');return res.status(400).json({ error: \'No photos provided\' });
-
-}console.log(\'Received photos:\');Object.keys(photos).forEach(key => {try {if (typeof photos[key] === \'string\') {console.log(`- ${key}: ${photos[key].substring(0, 50)}...`);} else if (photos[key] && typeof photos[key] === \'object\') {console.log(`- ${key}: [Object data]`);} else {console.log(`- ${key}: [Data type: ${typeof photos[key]}]`);}} catch (e) {console.log(`- ${key}: [Eroare la afișare: ${e.message}]`);}});
-
-
-const mockAnalysis = `Analiză piele:\n\nPe baza fotografiilor, am detectat următoarele:\n- Piele cu tendință ușoară spre deshidratare\n- Roșeață în zona T\n- Semne de sensibilitate la factorii de mediu\n\nRecomandări:\n1. Folosiți un cleanser blând, fără sulfați\n2. Aplicați serum cu acid hialuronic dimineața\n3. Folosiți o cremă hidratantă cu ceramide seara\n4. Aplicați SPF 30+ zilnic, chiar și în zilele înnorate\n\nEvitați produsele cu parfum și alcool care pot irita pielea sensibilă.`;setTimeout(() => {console.log(\'Sending analysis response\');res.json({ result: mockAnalysis });
-
-}, 2000);} catch (error) {console.error(\'Error processing request:\', error);res.status(500).json({ error: \'Server error: \' + error.message });
-
-}});
-
-function getLocalIPs() {const interfaces = os.networkInterfaces();
-const addresses = [];for (const iface of Object.values(interfaces)) {if (!iface) continue;for (const addr of iface) {if (addr.family === \'IPv4\' && !addr.internal) {addresses.push(addr.address);}}}return addresses;}app.listen(port, () => {const ipAddresses = getLocalIPs();console.log(\'\n===================================\');console.log(`Backend server running on port ${port}`);console.log(\'===================================\');console.log(\'\nServer disponibil la:\');console.log(`- Local: http://localhost:${port}`);if (ipAddresses.length > 0) {console.log(\'\nȘi la următoarele adrese IP (folosește una dintre acestea în aplicația mobilă):\');ipAddresses.forEach(ip => {console.log(`- http://${ip}:${port}`);});
-
-} else {console.log(\'\nNu s-au găsit alte adrese IP disponibile\');}console.log(\'\nEndpoints disponibile:\');console.log(`- GET  /ping         - Test conexiune`);console.log(`- POST /analyze-skin - Analiză poze`);console.log(\'\n===================================\');console.log(\'IMPORTANT: Verifică fișierul lib/config.ts și actualizează IP-ul serverului!\');console.log(\'===================================\n\');});
-
-
-
-app.on(\'error\', (error) => {console.error(\'Server error:\', error);});
-
-process.on(\'uncaughtException\', (error) => {console.error(\'Uncaught exception:\', error);});
-
-
+// Start the server
+app.listen(port, () => {
+  console.log(`Backend server running on port ${port}`);
+  console.log(`App is running at: http://localhost:${port}`);
+  console.log("Available endpoints:");
+  console.log("- GET /ping");
+});
